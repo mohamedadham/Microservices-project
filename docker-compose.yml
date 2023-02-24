@@ -1,0 +1,87 @@
+version: '3'
+
+services:
+  user:
+    build:
+      context: ./user-service
+    env_file:
+      - ./user-service/.env
+    depends_on:
+      # - database
+      - rabbitmq
+    networks:
+      - app-network
+
+  product:
+    build:
+      context: ./product-service
+    depends_on:
+      - database
+      - rabbitmq
+    networks:
+      - app-network
+
+  order:
+    build:
+      context: ./order-service
+    env_file:
+      - ./order-service/.env
+    depends_on:
+      - database
+      - rabbitmq
+    networks:
+      - app-network
+
+  gateway:
+    build:
+      context: ./graphql-gateway
+    ports:
+      - '7000:7000'
+    depends_on:
+      - user
+      - product
+      - order
+      - rabbitmq
+    networks:
+      - app-network
+
+  database:
+    image: mysql:latest
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - 3306:3306
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+      - RABBITMQ_DEFAULT_VHOST=/
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    networks:
+      - app-network
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.16.3
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+    ports:
+      - 9200:9200
+      - 9300:9300
+    
+    networks: 
+      - app-network 
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
