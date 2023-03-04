@@ -8,7 +8,7 @@ Each microservice is a separate repository, which can be found through the links
 - [Order Service](https://github.com/mohamedadham/Order-service)
 - [Graphql Gateway](https://github.com/mohamedadham/graphql-gateway)
 
-The microservices communicate with each other through RabbitMQ message broker, and are accessed via a GraphQL API Gateway built with NestJS framework and TypeORM and Prisma for database access.
+The microservices communicate with each other through RabbitMQ message broker, and are accessed via a GraphQL API Gateway. Services are built with NestJS framework and TypeORM and Prisma for database access.
 
 ## Requirements
 Docker and Docker Compose
